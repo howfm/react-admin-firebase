@@ -1,6 +1,6 @@
 import * as firebase from "firebase/app";
 import "firebase/firestore";
-
+import * as _ from "lodash";
 import {
   CREATE,
   DELETE,
@@ -12,8 +12,7 @@ import {
   UPDATE,
   UPDATE_MANY
 } from "react-admin";
-import { Observable, Subject } from "rxjs";
-import { type } from "os";
+import { Observable } from "rxjs";
 
 export interface IResource {
   path: string;
@@ -285,8 +284,8 @@ class FirebaseClient {
 
   private sortArray(data: Array<{}>, field: string, dir: "asc" | "desc") {
     data.sort((a: {}, b: {}) => {
-      const aValue = a[field] ? a[field].toString() : "";
-      const bValue = b[field] ? b[field].toString() : "";
+      const aValue = _.get(a, field) ? _.get(a, field).toString() : "";
+      const bValue = _.get(b, field) ? _.get(b, field).toString() : "";
       if (aValue > bValue) {
         return dir === "asc" ? 1 : -1;
       }
