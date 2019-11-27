@@ -14,7 +14,7 @@
   "main": "dist",
   "scripts": {
     "deploy": "yarn build && npm publish",
-    "build": "rm -rf dist && tsc",
+    "build": "rm -rf dist && tsc --skipLibCheck",
     "watch": "tsc -w --project tsconfig.dev.json"
   },
   "license": "MIT",
