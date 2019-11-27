@@ -24,7 +24,7 @@ When added as a gitHub dependency to a `package.json` we consider referencing a 
 
 ### Step 1: Build the dist
 
-```
+```bash
 yarn build
 ```
 
@@ -34,7 +34,7 @@ yarn build
 
 ### Step 3: Bump the version
 
-```
+```bash
 npm version [<newversion> | major | minor | patch
 ```
 
@@ -42,7 +42,7 @@ Take note of the output version.
 
 **Example:**
 
-```
+```bash
 $> yarn version --patch
 yarn version v1.12.3
 info Current version: 0.3.3
