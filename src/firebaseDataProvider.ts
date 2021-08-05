@@ -1,6 +1,5 @@
 import * as firebase from "firebase/app";
 import "firebase/firestore";
-import * as _ from "lodash";
 import {
   CREATE,
   DELETE,
@@ -10,9 +9,10 @@ import {
   GET_MANY_REFERENCE,
   GET_ONE,
   UPDATE,
-  UPDATE_MANY
+  UPDATE_MANY,
 } from "react-admin";
 import { Observable } from "rxjs";
+import { sortArray } from "./utils";
 
 export interface IResource {
   path: string;
@@ -41,9 +41,9 @@ function multiFilter(
   const filterKeys = Object.keys(filters);
 
   // filters all elements passing the criteria
-  return array.filter(item => {
+  return array.filter((item) => {
     // dynamically validate all filter criteria
-    return filterKeys.every(key => {
+    return filterKeys.every((key) => {
       if (!Array.isArray(filters[key])) {
         filters[key] = [filters[key]];
       }
@@ -71,7 +71,7 @@ class FirebaseClient {
   }
 
   public async initPath(inputPath: string) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (inputPath == null) {
         return;
       }
@@ -83,7 +83,7 @@ class FirebaseClient {
           const newList = querySnapshot.docs.map(
             (doc: firebase.firestore.QueryDocumentSnapshot) => {
               const data = doc.data();
-              Object.keys(data).forEach(key => {
+              Object.keys(data).forEach((key) => {
                 const value = data[key];
                 if (value === null || value === undefined) return;
                 if (value.toDate && value.toDate instanceof Function) {
@@ -103,7 +103,7 @@ class FirebaseClient {
         collection,
         list,
         observable,
-        path
+        path,
       };
       this.resources.push(r);
     });
@@ -118,9 +118,9 @@ class FirebaseClient {
     if (params.sort != null) {
       const { field, order } = params.sort;
       if (order === "ASC") {
-        this.sortArray(data, field, "asc");
+        sortArray(data, field, "asc");
       } else {
-        this.sortArray(data, field, "desc");
+        sortArray(data, field, "desc");
       }
     }
     let filteredData = this.filterArray(data, params.filter);
@@ -130,7 +130,7 @@ class FirebaseClient {
     const total = r.list.length;
     return {
       data: dataPage,
-      total
+      total,
     };
   }
 
@@ -154,22 +154,22 @@ class FirebaseClient {
     const newId = params.data[CREATE_WITHOUT_AUTOMATIC_ID_KEY];
     if (newId) {
       const data = {
-        ...params.data
+        ...params.data,
       };
       delete data[CREATE_WITHOUT_AUTOMATIC_ID_KEY];
       await r.collection.doc(newId).set(data, { merge: true });
       return {
         data: {
-          id: newId
-        }
+          id: newId,
+        },
       };
     }
     const doc = await r.collection.add(params.data);
     return {
       data: {
         ...params.data,
-        id: doc.id
-      }
+        id: doc.id,
+      },
     };
   }
 
@@ -185,8 +185,8 @@ class FirebaseClient {
     return {
       data: {
         ...params.data,
-        id
-      }
+        id,
+      },
     };
   }
 
@@ -201,11 +201,11 @@ class FirebaseClient {
       r.collection.doc(id).update(params.data);
       returnData.push({
         ...params.data,
-        id
+        id,
       });
     }
     return {
-      data: returnData
+      data: returnData,
     };
   }
 
@@ -216,7 +216,7 @@ class FirebaseClient {
     const r = this.tryGetResource(resourceName);
     r.collection.doc(params.id).delete();
     return {
-      data: params.previousData
+      data: params.previousData,
     };
   }
 
@@ -241,9 +241,9 @@ class FirebaseClient {
   ): Promise<IResponseGetMany> {
     const r = this.tryGetResource(resourceName);
     const ids = new Set(params.ids);
-    const matches = r.list.filter(item => ids.has(item["id"]));
+    const matches = r.list.filter((item) => ids.has(item["id"]));
     return {
-      data: matches
+      data: matches,
     };
   }
 
@@ -255,13 +255,13 @@ class FirebaseClient {
     const data = r.list;
     const targetField = params.target;
     const targetValue = params.id;
-    const matches = data.filter(val => val[targetField] === targetValue);
+    const matches = data.filter((val) => val[targetField] === targetValue);
     if (params.sort != null) {
       const { field, order } = params.sort;
       if (order === "ASC") {
-        this.sortArray(data, field, "asc");
+        sortArray(data, field, "asc");
       } else {
-        this.sortArray(data, field, "desc");
+        sortArray(data, field, "desc");
       }
     }
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
@@ -272,7 +272,7 @@ class FirebaseClient {
   }
 
   public GetResource(resourceName: string): IResource {
-    const matches: IResource[] = this.resources.filter(val => {
+    const matches: IResource[] = this.resources.filter((val) => {
       return val.path === resourceName;
     });
     if (matches.length < 1) {
@@ -280,20 +280,6 @@ class FirebaseClient {
     }
     const match: IResource = matches[0];
     return match;
-  }
-
-  private sortArray(data: Array<{}>, field: string, dir: "asc" | "desc") {
-    data.sort((a: {}, b: {}) => {
-      const aValue = _.get(a, field) ? _.get(a, field).toString() : "";
-      const bValue = _.get(b, field) ? _.get(b, field).toString() : "";
-      if (aValue > bValue) {
-        return dir === "asc" ? 1 : -1;
-      }
-      if (aValue < bValue) {
-        return dir === "asc" ? -1 : 1;
-      }
-      return 0;
-    });
   }
 
   private filterArray(data: Array<{}>, filterFields: { [field: string]: any }) {
@@ -307,7 +293,7 @@ class FirebaseClient {
   }
 
   private tryGetResource(resourceName: string) {
-    const matches: IResource[] = this.resources.filter(val => {
+    const matches: IResource[] = this.resources.filter((val) => {
       return val.path === resourceName;
     });
     if (matches.length < 1) {
