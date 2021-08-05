@@ -1,50 +1,29 @@
-import { hasUncaughtExceptionCaptureCallback } from "process";
 import { sortArray } from "./utils";
 
 describe("test", () => {
   it("sorts alphabetically correct", () => {
-    const array = [
-      { sortByMe: "a" },
-      { sortByMe: "ab" },
-      { sortByMe: "A" },
-      { sortByMe: "AB" },
-    ];
-    sortArray(array, "sortByMe", "asc");
+    const array = [{ id: "a" }, { id: "ab" }, { id: "A" }, { id: "AB" }];
+    sortArray(array, "id", "asc");
     expect(array).toEqual([
-      { sortByMe: "a" },
-      { sortByMe: "A" },
-      { sortByMe: "ab" },
-      { sortByMe: "AB" },
+      { id: "a" },
+      { id: "A" },
+      { id: "ab" },
+      { id: "AB" },
     ]);
-    sortArray(array, "sortByMe", "desc");
+    sortArray(array, "id", "desc");
     expect(array).toEqual([
-      { sortByMe: "ab" },
-      { sortByMe: "AB" },
-      { sortByMe: "a" },
-      { sortByMe: "A" },
+      { id: "ab" },
+      { id: "AB" },
+      { id: "a" },
+      { id: "A" },
     ]);
   });
 
   it("sorts numbers", () => {
-    const array = [
-      { sortByMe: 1 },
-      { sortByMe: 10 },
-      { sortByMe: 2 },
-      { sortByMe: 20 },
-    ];
-    sortArray(array, "sortByMe", "asc");
-    expect(array).toEqual([
-      { sortByMe: 1 },
-      { sortByMe: 2 },
-      { sortByMe: 10 },
-      { sortByMe: 20 },
-    ]);
-    sortArray(array, "sortByMe", "desc");
-    expect(array).toEqual([
-      { sortByMe: 20 },
-      { sortByMe: 10 },
-      { sortByMe: 2 },
-      { sortByMe: 1 },
-    ]);
+    const array = [{ id: 1 }, { id: 10 }, { id: 2 }, { id: 20 }];
+    sortArray(array, "id", "asc");
+    expect(array).toEqual([{ id: 1 }, { id: 2 }, { id: 10 }, { id: 20 }]);
+    sortArray(array, "id", "desc");
+    expect(array).toEqual([{ id: 20 }, { id: 10 }, { id: 2 }, { id: 1 }]);
   });
 });
