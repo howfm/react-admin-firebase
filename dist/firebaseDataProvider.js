@@ -11,10 +11,11 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -46,11 +47,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CREATE_WITHOUT_AUTOMATIC_ID_KEY = exports.fb = void 0;
 var firebase = require("firebase/app");
 require("firebase/firestore");
-var _ = require("lodash");
 var react_admin_1 = require("react-admin");
 var rxjs_1 = require("rxjs");
+var utils_1 = require("./utils");
 // UTILS
 function isEmptyObj(obj) {
     return JSON.stringify(obj) == "{}";
@@ -123,7 +125,7 @@ var FirebaseClient = /** @class */ (function () {
                             collection: collection,
                             list: list,
                             observable: observable,
-                            path: path
+                            path: path,
                         };
                         _this.resources.push(r);
                     })];
@@ -139,10 +141,10 @@ var FirebaseClient = /** @class */ (function () {
                 if (params.sort != null) {
                     _a = params.sort, field = _a.field, order = _a.order;
                     if (order === "ASC") {
-                        this.sortArray(data, field, "asc");
+                        utils_1.sortArray(data, field, "asc");
                     }
                     else {
-                        this.sortArray(data, field, "desc");
+                        utils_1.sortArray(data, field, "desc");
                     }
                 }
                 filteredData = this.filterArray(data, params.filter);
@@ -152,7 +154,7 @@ var FirebaseClient = /** @class */ (function () {
                 total = r.list.length;
                 return [2 /*return*/, {
                         data: dataPage,
-                        total: total
+                        total: total,
                     }];
             });
         });
@@ -186,14 +188,14 @@ var FirebaseClient = /** @class */ (function () {
                         _a.sent();
                         return [2 /*return*/, {
                                 data: {
-                                    id: newId
-                                }
+                                    id: newId,
+                                },
                             }];
                     case 2: return [4 /*yield*/, r.collection.add(params.data)];
                     case 3:
                         doc = _a.sent();
                         return [2 /*return*/, {
-                                data: __assign({}, params.data, { id: doc.id })
+                                data: __assign(__assign({}, params.data), { id: doc.id }),
                             }];
                 }
             });
@@ -212,7 +214,7 @@ var FirebaseClient = /** @class */ (function () {
                     case 1:
                         _a.sent();
                         return [2 /*return*/, {
-                                data: __assign({}, params.data, { id: id })
+                                data: __assign(__assign({}, params.data), { id: id }),
                             }];
                 }
             });
@@ -228,10 +230,10 @@ var FirebaseClient = /** @class */ (function () {
                 for (_i = 0, _a = params.ids; _i < _a.length; _i++) {
                     id = _a[_i];
                     r.collection.doc(id).update(params.data);
-                    returnData.push(__assign({}, params.data, { id: id }));
+                    returnData.push(__assign(__assign({}, params.data), { id: id }));
                 }
                 return [2 /*return*/, {
-                        data: returnData
+                        data: returnData,
                     }];
             });
         });
@@ -243,7 +245,7 @@ var FirebaseClient = /** @class */ (function () {
                 r = this.tryGetResource(resourceName);
                 r.collection.doc(params.id).delete();
                 return [2 /*return*/, {
-                        data: params.previousData
+                        data: params.previousData,
                     }];
             });
         });
@@ -273,7 +275,7 @@ var FirebaseClient = /** @class */ (function () {
                 ids = new Set(params.ids);
                 matches = r.list.filter(function (item) { return ids.has(item["id"]); });
                 return [2 /*return*/, {
-                        data: matches
+                        data: matches,
                     }];
             });
         });
@@ -290,10 +292,10 @@ var FirebaseClient = /** @class */ (function () {
                 if (params.sort != null) {
                     _a = params.sort, field = _a.field, order = _a.order;
                     if (order === "ASC") {
-                        this.sortArray(data, field, "asc");
+                        utils_1.sortArray(data, field, "asc");
                     }
                     else {
-                        this.sortArray(data, field, "desc");
+                        utils_1.sortArray(data, field, "desc");
                     }
                 }
                 pageStart = (params.pagination.page - 1) * params.pagination.perPage;
@@ -313,19 +315,6 @@ var FirebaseClient = /** @class */ (function () {
         }
         var match = matches[0];
         return match;
-    };
-    FirebaseClient.prototype.sortArray = function (data, field, dir) {
-        data.sort(function (a, b) {
-            var aValue = _.get(a, field) ? _.get(a, field).toString() : "";
-            var bValue = _.get(b, field) ? _.get(b, field).toString() : "";
-            if (aValue > bValue) {
-                return dir === "asc" ? 1 : -1;
-            }
-            if (aValue < bValue) {
-                return dir === "asc" ? -1 : 1;
-            }
-            return 0;
-        });
     };
     FirebaseClient.prototype.filterArray = function (data, filterFields) {
         if (isEmptyObj(filterFields))
