@@ -1,7 +1,7 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "homepage": "https://github.com/benwinding/react-admin-firebase",
   "email": "hello@benwinding.com",
   "main": "dist",
