@@ -48,7 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CREATE_WITHOUT_AUTOMATIC_ID_KEY = exports.fb = void 0;
-var firebase = require("firebase/app");
+var firebase = require("firebase");
 require("firebase/firestore");
 var react_admin_1 = require("react-admin");
 var rxjs_1 = require("rxjs");
@@ -86,9 +86,9 @@ var FirebaseClient = /** @class */ (function () {
     }
     FirebaseClient.getInstance = function (firebaseConfig) {
         var id = firebaseConfig["projectId"];
-        FirebaseClient.instance.app = !firebase.apps.length
-            ? firebase.initializeApp(firebaseConfig, id)
-            : firebase.app(id);
+        FirebaseClient.instance.app = !firebase.default.apps.length
+            ? firebase.default.initializeApp(firebaseConfig, id)
+            : firebase.default.app(id);
         FirebaseClient.instance.db = FirebaseClient.instance.app.firestore();
         return FirebaseClient.instance;
     };
