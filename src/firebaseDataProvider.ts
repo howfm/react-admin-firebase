@@ -70,7 +70,7 @@ class FirebaseClient {
     return FirebaseClient.instance;
   }
 
-  public async initPath(inputPath: string) {
+  public async initPath(inputPath: string): Promise<void> {
     return new Promise((resolve) => {
       if (inputPath == null) {
         return;
