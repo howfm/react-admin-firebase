@@ -1,4 +1,3 @@
-import * as firebase from "firebase";
 import "firebase/firestore";
 import {
   CREATE,
@@ -13,10 +12,11 @@ import {
 } from "react-admin";
 import { Observable } from "rxjs";
 import { sortArray } from "./utils";
+import firebase from "firebase";
 
 export interface IResource {
   path: string;
-  collection: firebase.default.firestore.CollectionReference;
+  collection: firebase.firestore.CollectionReference;
   observable: Observable<{}>;
   list: Array<{}>;
 }
@@ -55,17 +55,17 @@ function multiFilter(
 }
 
 class FirebaseClient {
-  private db: firebase.default.firestore.Firestore;
-  private app: firebase.default.app.App;
+  private db: firebase.firestore.Firestore;
+  private app: firebase.app.App;
   private resources: IResource[] = [];
 
   static instance = new FirebaseClient();
 
   static getInstance(firebaseConfig: {}) {
     const id = firebaseConfig["projectId"];
-    FirebaseClient.instance.app = !firebase.default.apps.length
-      ? firebase.default.initializeApp(firebaseConfig, id)
-      : firebase.default.app(id);
+    FirebaseClient.instance.app = !firebase.apps.length
+      ? firebase.initializeApp(firebaseConfig, id)
+      : firebase.app(id);
     FirebaseClient.instance.db = FirebaseClient.instance.app.firestore();
     return FirebaseClient.instance;
   }
@@ -79,9 +79,9 @@ class FirebaseClient {
       const collection = this.db.collection(path);
       const observable = this.getCollectionObservable(collection);
       observable.subscribe(
-        (querySnapshot: firebase.default.firestore.QuerySnapshot) => {
+        (querySnapshot: firebase.firestore.QuerySnapshot) => {
           const newList = querySnapshot.docs.map(
-            (doc: firebase.default.firestore.QueryDocumentSnapshot) => {
+            (doc: firebase.firestore.QueryDocumentSnapshot) => {
               const data = doc.data();
               Object.keys(data).forEach((key) => {
                 const value = data[key];
@@ -304,7 +304,7 @@ class FirebaseClient {
   }
 
   private getCollectionObservable(
-    collection: firebase.default.firestore.CollectionReference
+    collection: firebase.firestore.CollectionReference
   ): Observable<any> {
     const observable: any = Observable.create((observer: any) =>
       collection.onSnapshot(observer)
