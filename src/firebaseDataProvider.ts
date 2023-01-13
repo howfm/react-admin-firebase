@@ -11,13 +11,14 @@ import {
   UPDATE,
   UPDATE_MANY,
 } from "react-admin";
-import { Observable } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { sortArray } from "./utils";
 
 export interface IResource {
   path: string;
   collection: firebase.firestore.CollectionReference;
   list: Array<{}>;
+  subscription: Subscription;
 }
 
 // UTILS
@@ -77,7 +78,7 @@ class FirebaseClient {
       const path = inputPath;
       const collection = this.db.collection(path);
       const observable = this.getCollectionObservable(collection);
-      observable.subscribe(
+      const subscription = observable.subscribe(
         (querySnapshot: firebase.firestore.QuerySnapshot) => {
           const newList = querySnapshot.docs.map(
             (doc: firebase.firestore.QueryDocumentSnapshot) => {
@@ -102,9 +103,15 @@ class FirebaseClient {
         collection,
         list,
         path,
+        subscription,
       };
       this.resources.push(r);
     });
+  }
+
+  public unsubscribe() {
+    this.resources.forEach((r) => r.subscription.unsubscribe());
+    this.resources = [];
   }
 
   public async apiGetList(
