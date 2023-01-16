@@ -103,7 +103,7 @@ var FirebaseClient = /** @class */ (function () {
                         var path = inputPath;
                         var collection = _this.db.collection(path);
                         var observable = _this.getCollectionObservable(collection);
-                        observable.subscribe(function (querySnapshot) {
+                        var subscription = observable.subscribe(function (querySnapshot) {
                             var newList = querySnapshot.docs.map(function (doc) {
                                 var data = doc.data();
                                 Object.keys(data).forEach(function (key) {
@@ -126,11 +126,16 @@ var FirebaseClient = /** @class */ (function () {
                             list: list,
                             observable: observable,
                             path: path,
+                            subscription: subscription,
                         };
                         _this.resources.push(r);
                     })];
             });
         });
+    };
+    FirebaseClient.prototype.unsubscribe = function () {
+        this.resources.forEach(function (r) { return r.subscription.unsubscribe(); });
+        this.resources = [];
     };
     FirebaseClient.prototype.apiGetList = function (resourceName, params) {
         return __awaiter(this, void 0, void 0, function () {
