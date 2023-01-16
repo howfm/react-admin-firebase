@@ -17,6 +17,7 @@ import { sortArray } from "./utils";
 export interface IResource {
   path: string;
   collection: firebase.firestore.CollectionReference;
+  observable: Observable<{}>;
   list: Array<{}>;
   subscription: Subscription;
 }
@@ -102,6 +103,7 @@ class FirebaseClient {
       const r: IResource = {
         collection,
         list,
+        observable,
         path,
         subscription,
       };
